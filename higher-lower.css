@@ -1,0 +1,230 @@
+/* Higher/Lower Game Styles */
+
+/* Canvas for background effects */
+#background-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+/* Game components */
+.term-card {
+  height: 100%;
+  margin-bottom: 20px;
+  background: rgba(26, 32, 53, 0.7);
+  backdrop-filter: blur(5px);
+  border-radius: 12px;
+  border: 2px solid rgba(93, 171, 252, 0.3);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(93, 171, 252, 0.2);
+  transition: all 0.3s ease;
+  transform-style: preserve-3d;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.term-card:hover {
+  transform: translateY(-5px) rotateY(5deg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(93, 171, 252, 0.3);
+  border-color: rgba(93, 171, 252, 0.6);
+}
+
+.searches-hidden {
+  color: transparent;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.card-title {
+  color: #5dabfc;
+  font-weight: bold;
+  font-size: 2rem;
+  text-shadow: 0 0 10px rgba(93, 171, 252, 0.5);
+}
+
+/* VS section */
+.vs-container {
+  background: linear-gradient(135deg, #ef4444 0%, #5dabfc 100%);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(93, 171, 252, 0.4);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(93, 171, 252, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4), 0 0 25px rgba(93, 171, 252, 0.6);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(93, 171, 252, 0.4);
+  }
+}
+
+/* Score display */
+#score-display {
+  background: rgba(26, 32, 53, 0.7);
+  backdrop-filter: blur(5px);
+  border-radius: 12px;
+  border: 1px solid rgba(93, 171, 252, 0.3);
+  padding: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2), 0 0 15px rgba(93, 171, 252, 0.3);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Game over screen */
+#game-over {
+  background: linear-gradient(135deg, rgba(26, 32, 53, 0.9) 0%, rgba(20, 30, 48, 0.9) 100%);
+  backdrop-filter: blur(10px);
+  padding: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(93, 171, 252, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Crypto highlight styles */
+.crypto-highlight {
+  background: linear-gradient(45deg, #5dabfc, #10b981);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: bold;
+}
+
+/* Bet form */
+#bet-form {
+  background: rgba(26, 32, 53, 0.7);
+  backdrop-filter: blur(5px);
+  border-radius: 12px;
+  border: 1px solid rgba(93, 171, 252, 0.3);
+  padding: 25px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2), 0 0 15px rgba(93, 171, 252, 0.3);
+  max-width: 500px;
+  margin: 0 auto 30px auto;
+}
+
+/* Higher/Lower buttons */
+#higher-btn, #lower-btn {
+  min-width: 120px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  padding: 12px 20px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+#higher-btn:hover, #lower-btn:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.1);
+}
+
+#higher-btn:active, #lower-btn:active {
+  transform: translateY(1px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .term-card {
+    min-height: 220px;
+    margin-bottom: 15px;
+  }
+  
+  .vs-container {
+    width: 60px;
+    height: 60px;
+    margin: 10px auto;
+  }
+  
+  #higher-btn, #lower-btn {
+    display: inline-block;
+    width: 45%;
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  #score-display, #bet-form {
+    padding: 15px;
+  }
+}
+
+/* Game area spacing */
+#game-area {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+#welcome-screen {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.win-message {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.lose-message {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+#searches1, #searches2 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 10px 0;
+  text-shadow: 0 0 10px rgba(93, 171, 252, 0.5);
+}
+
+.crypto-highlight {
+  background-color: rgba(93, 171, 252, 0.1);
+  border-radius: 20px;
+  padding: 5px 12px;
+  display: inline-block;
+  border: 1px solid rgba(93, 171, 252, 0.3);
+  margin: 5px;
+}
+
+@media (max-width: 768px) {
+  .term-card {
+    height: 250px;
+    margin-bottom: 20px;
+  }
+  
+  .card-title {
+    font-size: 1.8rem;
+  }
+  
+  #searches1, #searches2 {
+    font-size: 1.8rem;
+  }
+  
+  #game-area .row {
+    flex-direction: column;
+  }
+  
+  #game-area .col-md-2 {
+    margin: 20px 0;
+  }
+} 
