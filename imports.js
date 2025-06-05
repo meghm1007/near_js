@@ -1,4 +1,4 @@
-// This file handles loading all external dependencies via CDN
+// This file handles access to the NEAR API loaded via CDN
 
 // Create a global object to store our loaded modules
 window.NearModules = {};
@@ -14,8 +14,12 @@ async function loadBuffer() {
   } catch (error) {
     console.error('Failed to load Buffer:', error);
     return null;
+
   }
+  console.error('Buffer not found in global scope');
+  return false;
 }
+
 
 // Load the NEAR API JS module
 async function loadNearApi() {
@@ -28,10 +32,23 @@ async function loadNearApi() {
   } catch (error) {
     console.error('Failed to load NEAR API:', error);
     return null;
+
   }
+  console.error('NEAR API not found in global scope');
+  return false;
 }
 
-// Function to load all modules
+// Initialize modules
+function initModules() {
+  const bufferLoaded = initBuffer();
+  const nearApiLoaded = initNearApi();
+  return bufferLoaded && nearApiLoaded;
+}
+
+// Try to initialize immediately
+initModules();
+
+// Function to load all modules - now just returns the modules since they're loaded by script tags
 export async function loadAllModules() {
   await Promise.all([
     loadBuffer(),
@@ -45,3 +62,4 @@ export async function loadAllModules() {
 // Export direct references to make imports cleaner
 export const getBuffer = () => window.NearModules.Buffer;
 export const getNearApi = () => window.NearModules.nearApi;
+
