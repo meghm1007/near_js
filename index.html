@@ -7,12 +7,22 @@
   <meta name="theme-color" content="#0a0a1a">
   <meta name="description" content="Higher Lower Game on NEAR Protocol - Guess search volumes and earn NEAR tokens">
   <meta name="keywords" content="NEAR, cryptocurrency, blockchain, game, higher lower">
-  
+
   <!-- Open Graph / Social Media -->
   <meta property="og:title" content="Higher Lower Game - NEAR Protocol">
   <meta property="og:description" content="Test your knowledge and earn NEAR tokens in this Higher Lower crypto game">
   <meta property="og:type" content="website">
-  
+
+  <!-- Import Map -->
+  <script type="importmap">
+  {
+    "imports": {
+      "near-api-js": "https://esm.sh/near-api-js@2.1.4",
+      "buffer": "https://esm.sh/buffer@6.0.3"
+    }
+  }
+  </script>
+
   <link rel="icon" href="favicon.ico" />
   <link rel="apple-touch-icon" href="favicon.ico" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -34,7 +44,7 @@
 <body>
   <nav class="navbar">
     <div class="container-fluid navbar-expand-lg">
-      <a href="/"><img src="logo-black.svg" alt="Near" height="40" class="d-inline-block align-text-top" /></a>
+      <!-- <a href="/"><img src="logo-black.svg" alt="Near" height="40" class="d-inline-block align-text-top" /></a> -->
       <div class='navbar-nav pt-1'>
         <button class="btn btn-secondary" id="sign-in-button"> Login </button>
         <button class="btn btn-secondary d-none" id="sign-out-button"> Logout <span data-behavior="account-id"></span></button>
@@ -49,8 +59,8 @@
         <h1 class="text-center mb-4">Higher Lower Game</h1>
         <p class="text-center">Sign in with your NEAR wallet to play the Higher Lower Game!</p>
         <p class="text-center mt-4">
-          <span class="crypto-highlight">⚡ Bet NEAR tokens</span> • 
-          <span class="crypto-highlight">🏆 Win big rewards</span> • 
+          <span class="crypto-highlight">⚡ Bet NEAR tokens</span> •
+          <span class="crypto-highlight">🏆 Win big rewards</span> •
           <span class="crypto-highlight">🔗 Powered by blockchain</span>
         </p>
         <div class="text-center mt-5">
@@ -64,7 +74,7 @@
           <div class="col text-center">
             <h1 class="mb-4">Higher Lower Game</h1>
             <p class="lead mb-4">Guess if the second term has higher or lower search volume than the first!</p>
-            
+
             <!-- Score Display - More prominent -->
             <div id="score-display" class="mb-4">
               <div class="row">
@@ -76,7 +86,7 @@
                 </div>
               </div>
             </div>
-            
+
             <div id="bet-form" class="mb-5">
               <h3 class="mb-3">Place your bet</h3>
               <div class="input-group mb-3 w-50 mx-auto">
