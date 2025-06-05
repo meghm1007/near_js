@@ -6,9 +6,9 @@ window.NearModules = {};
 // Load the Buffer module
 async function loadBuffer() {
   try {
-    // Load buffer from a CDN
-    await import('https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.js');
-    window.NearModules.Buffer = window.buffer.Buffer;
+    // Load buffer using import map
+    const bufferModule = await import('buffer');
+    window.NearModules.Buffer = bufferModule.Buffer;
     console.log('Buffer loaded successfully');
     return window.NearModules.Buffer;
   } catch (error) {
@@ -20,9 +20,9 @@ async function loadBuffer() {
 // Load the NEAR API JS module
 async function loadNearApi() {
   try {
-    // Load near-api-js from a CDN
-    await import('https://cdn.jsdelivr.net/npm/near-api-js@2.1.4/dist/near-api-js.min.js');
-    window.NearModules.nearApi = window.nearApi;
+    // Load near-api-js using import map
+    const nearApiModule = await import('near-api-js');
+    window.NearModules.nearApi = nearApiModule;
     console.log('NEAR API loaded successfully');
     return window.NearModules.nearApi;
   } catch (error) {
@@ -37,11 +37,11 @@ export async function loadAllModules() {
     loadBuffer(),
     loadNearApi()
   ]);
-  
+
   console.log('All modules loaded successfully');
   return window.NearModules;
 }
 
 // Export direct references to make imports cleaner
 export const getBuffer = () => window.NearModules.Buffer;
-export const getNearApi = () => window.NearModules.nearApi; 
+export const getNearApi = () => window.NearModules.nearApi;
