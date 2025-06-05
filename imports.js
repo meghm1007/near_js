@@ -1,47 +1,56 @@
-// This file handles loading all external dependencies via CDN
+// This file handles access to the NEAR API loaded via CDN
 
 // Create a global object to store our loaded modules
 window.NearModules = {};
 
-// Load the Buffer module
-async function loadBuffer() {
-  try {
-    // Load buffer from a CDN
-    await import('https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.js');
+// Check if Buffer is already loaded from the script tag
+function initBuffer() {
+  if (typeof window.buffer !== 'undefined' && window.buffer.Buffer) {
     window.NearModules.Buffer = window.buffer.Buffer;
-    console.log('Buffer loaded successfully');
-    return window.NearModules.Buffer;
-  } catch (error) {
-    console.error('Failed to load Buffer:', error);
-    return null;
+    console.log('Buffer loaded from global scope');
+    return true;
   }
+  console.error('Buffer not found in global scope');
+  return false;
 }
 
-// Load the NEAR API JS module
-async function loadNearApi() {
-  try {
-    // Load near-api-js from a CDN
-    await import('https://cdn.jsdelivr.net/npm/near-api-js@2.1.4/dist/near-api-js.min.js');
+// Check if NEAR API is already loaded from the script tag
+function initNearApi() {
+  if (typeof window.nearApi !== 'undefined') {
     window.NearModules.nearApi = window.nearApi;
-    console.log('NEAR API loaded successfully');
-    return window.NearModules.nearApi;
-  } catch (error) {
-    console.error('Failed to load NEAR API:', error);
-    return null;
+    console.log('NEAR API loaded from global scope');
+    return true;
   }
+  console.error('NEAR API not found in global scope');
+  return false;
 }
 
-// Function to load all modules
+// Initialize modules
+function initModules() {
+  const bufferLoaded = initBuffer();
+  const nearApiLoaded = initNearApi();
+  return bufferLoaded && nearApiLoaded;
+}
+
+// Try to initialize immediately
+initModules();
+
+// Function to load all modules - now just returns the modules since they're loaded by script tags
 export async function loadAllModules() {
-  await Promise.all([
-    loadBuffer(),
-    loadNearApi()
-  ]);
-  
-  console.log('All modules loaded successfully');
-  return window.NearModules;
+  return new Promise((resolve) => {
+    // Small delay to ensure scripts are fully processed
+    setTimeout(() => {
+      const modulesLoaded = initModules();
+      if (modulesLoaded) {
+        console.log('All modules loaded successfully');
+      } else {
+        console.warn('Some modules failed to load, check script tags');
+      }
+      resolve(window.NearModules);
+    }, 100);
+  });
 }
 
 // Export direct references to make imports cleaner
-export const getBuffer = () => window.NearModules.Buffer;
-export const getNearApi = () => window.NearModules.nearApi; 
+export const getBuffer = () => window.NearModules.Buffer || (window.buffer && window.buffer.Buffer);
+export const getNearApi = () => window.NearModules.nearApi || window.nearApi; 

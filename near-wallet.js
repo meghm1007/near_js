@@ -28,57 +28,91 @@ export class Wallet {
   }
 
   async startUp(signedInCallback) {
-    // Get NEAR API from our imported module
-    const nearApi = getNearApi();
-    if (!nearApi) {
-      console.error('NEAR API not loaded yet');
-      return;
+    try {
+      // Get NEAR API from our imported module - wait for it to be loaded if not available yet
+      let nearApi = getNearApi();
+      if (!nearApi) {
+        console.log('Waiting for NEAR API to load...');
+        
+        // Check if it's available directly from the global scope
+        if (window.nearApi) {
+          nearApi = window.nearApi;
+          console.log('Found NEAR API in global scope');
+        } else {
+          // Wait for the NEAR API to be loaded (poll until available)
+          await new Promise(resolve => {
+            const checkInterval = setInterval(() => {
+              nearApi = getNearApi();
+              if (nearApi) {
+                clearInterval(checkInterval);
+                resolve();
+              } else if (window.nearApi) {
+                nearApi = window.nearApi;
+                clearInterval(checkInterval);
+                resolve();
+              }
+            }, 100);
+          });
+        }
+      }
+
+      // Initialize keyStore
+      this.keyStore = new nearApi.keyStores.BrowserLocalStorageKeyStore();
+
+      // Initialize connection to the NEAR testnet
+      const near = await nearApi.connect({
+        networkId: this.networkId,
+        keyStore: this.keyStore,
+        nodeUrl: TESTNET_CONFIG.nodeUrl,
+        walletUrl: TESTNET_CONFIG.walletUrl,
+        helperUrl: TESTNET_CONFIG.helperUrl,
+        headers: {}
+      });
+
+      // Initialize wallet connection
+      this.walletConnection = new nearApi.WalletConnection(near, 'higher-lower-game');
+
+      // Load in account data
+      if (this.walletConnection.isSignedIn()) {
+        this.accountId = this.walletConnection.getAccountId();
+        this.account = this.walletConnection.account();
+        this.isSignedIn = true;
+      }
+
+      // Return if user is signed in
+      if (typeof signedInCallback === 'function') {
+        signedInCallback(this.accountId);
+      }
+    } catch (error) {
+      console.error('Error initializing wallet:', error);
     }
-
-    // Initialize keyStore
-    this.keyStore = new nearApi.keyStores.BrowserLocalStorageKeyStore();
-
-    // Initialize connection to the NEAR testnet
-    const near = await nearApi.connect({
-      networkId: this.networkId,
-      keyStore: this.keyStore,
-      nodeUrl: TESTNET_CONFIG.nodeUrl,
-      walletUrl: TESTNET_CONFIG.walletUrl,
-      helperUrl: TESTNET_CONFIG.helperUrl,
-      headers: {}
-    });
-
-    // Initialize wallet connection
-    this.walletConnection = new WalletConnection(near, 'higher-lower-game');
-
-    // Load in account data
-    if (this.walletConnection.isSignedIn()) {
-      this.accountId = this.walletConnection.getAccountId();
-      this.account = this.walletConnection.account();
-      this.isSignedIn = true;
-    }
-
-    // Return if user is signed in
-    signedInCallback(this.accountId);
   }
 
   // Sign-in method
   signIn() {
-    // Redirects user to wallet to authorize your dApp
-    this.walletConnection.requestSignIn({
-      contractId: this.contractId,
-      methodNames: [], // add methods you want to call
-      successUrl: this.successUrl,
-      failureUrl: this.failureUrl
-    });
+    try {
+      // Redirects user to wallet to authorize your dApp
+      this.walletConnection.requestSignIn({
+        contractId: this.contractId,
+        methodNames: [], // add methods you want to call
+        successUrl: this.successUrl,
+        failureUrl: this.failureUrl
+      });
+    } catch (error) {
+      console.error('Error signing in:', error);
+    }
   }
 
   // Sign-out method
   signOut() {
-    this.walletConnection.signOut();
-    this.accountId = null;
-    this.isSignedIn = false;
-    window.location.replace(window.location.origin + window.location.pathname);
+    try {
+      this.walletConnection.signOut();
+      this.accountId = null;
+      this.isSignedIn = false;
+      window.location.replace(window.location.origin + window.location.pathname);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   }
 
   // Check if signed in
@@ -93,43 +127,58 @@ export class Wallet {
 
   // View method - doesn't change state
   async viewMethod({ contractId, method, args = {} }) {
-    const result = await this.walletConnection.account().viewFunction({
-      contractId: contractId || this.contractId,
-      methodName: method,
-      args
-    });
-    return result;
+    try {
+      const result = await this.walletConnection.account().viewFunction({
+        contractId: contractId || this.contractId,
+        methodName: method,
+        args
+      });
+      return result;
+    } catch (error) {
+      console.error(`Error calling view method ${method}:`, error);
+      throw error;
+    }
   }
 
   // Call method - changes state
   async callMethod({ contractId, method, args = {}, gas = '30000000000000', deposit = '0' }) {
-    const nearApi = getNearApi();
-    // Convert deposit to yoctoNEAR
-    const depositInYocto = nearApi.utils.format.parseNearAmount(deposit.toString());
+    try {
+      const nearApi = getNearApi() || window.nearApi;
+      // Convert deposit to yoctoNEAR
+      const depositInYocto = nearApi.utils.format.parseNearAmount(deposit.toString());
 
-    const outcome = await this.walletConnection.account().functionCall({
-      contractId: contractId || this.contractId,
-      methodName: method,
-      args,
-      gas,
-      attachedDeposit: depositInYocto
-    });
-    
-    return outcome;
+      const outcome = await this.walletConnection.account().functionCall({
+        contractId: contractId || this.contractId,
+        methodName: method,
+        args,
+        gas,
+        attachedDeposit: depositInYocto
+      });
+      
+      return outcome;
+    } catch (error) {
+      console.error(`Error calling method ${method}:`, error);
+      throw error;
+    }
   }
 
   // Transfer NEAR tokens
   async transferNEAR(receiverId, amount) {
-    const nearApi = getNearApi();
-    // Convert amount to yoctoNEAR
-    const amountInYocto = nearApi.utils.format.parseNearAmount(amount.toString());
+    try {
+      const nearApi = getNearApi() || window.nearApi;
+      // Convert amount to yoctoNEAR
+      const amountInYocto = nearApi.utils.format.parseNearAmount(amount.toString());
 
-    const outcome = await this.walletConnection.account().sendMoney(
-      receiverId,
-      amountInYocto
-    );
-    
-    return outcome;
+      const outcome = await this.walletConnection.account().sendMoney(
+        receiverId,
+        amountInYocto
+      );
+      
+      return outcome;
+    } catch (error) {
+      console.error(`Error transferring NEAR:`, error);
+      throw error;
+    }
   }
 }
 
